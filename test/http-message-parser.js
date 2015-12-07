@@ -97,9 +97,9 @@ test('httpMessageParser', function (t) {
 
     t.equal(parsedMessage.method, null);
     t.equal(parsedMessage.url, null);
-    t.equal(parsedMessage.statusCode, null);
-    t.equal(parsedMessage.statusMessage, null);
-    t.equal(parsedMessage.httpVersion, null);
+    t.equal(parsedMessage.statusCode, 200);
+    t.equal(parsedMessage.statusMessage, 'OK');
+    t.equal(parsedMessage.httpVersion, 1.1);
     t.equal(parsedMessage.boundary, 'frontier');
     t.deepEqual(parsedMessage.headers, {
       'MIME-Version': 1.0,

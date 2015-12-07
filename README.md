@@ -15,6 +15,7 @@ Here's an example.
 `multipart_example.txt`
 
 ```
+HTTP/1.1 200 OK
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=frontier
 
@@ -42,8 +43,8 @@ console.log(parsedMessage);
 {
   method: null,
   url: null,
-  statusCode: null,
-  statusMessage: null,
+  statusCode: 200,
+  statusMessage: 'OK',
   httpVersion: 1.1,
   headers: {
     'MIME-Version': '1.0'

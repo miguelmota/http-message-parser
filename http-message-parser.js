@@ -63,6 +63,9 @@
       messageString = message.toString();
     } else if (typeof message === 'string') {
       messageString = message;
+      message = new Buffer(messageString);
+    } else {
+      return result;
     }
 
     /* Parse request line
