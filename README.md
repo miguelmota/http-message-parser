@@ -46,8 +46,8 @@ console.log(parsedMessage);
   statusMessage: null,
   httpVersion: 1.1,
   headers: {
-    MIME-Version: 1.0
-    Content-Type: multipart/mixed; boundary=frontier
+    'MIME-Version': '1.0'
+    'Content-Type': 'multipart/mixed; boundary=frontier'
   },
   body: <Buffer>, // "This is a message with multiple parts in MIME format."
   boundary: 'frontier',
