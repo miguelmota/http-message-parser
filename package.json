@@ -1,7 +1,7 @@
 {
   "name": "http-message-parser",
-  "version": "0.0.1",
-  "description": "Function composition from right to left.",
+  "version": "0.0.2",
+  "description": "HTTP message parser in Node.js.",
   "main": "http-message-parser.js",
   "directories": {
     "test": "test"
