@@ -41,11 +41,11 @@ const parsedMessage = httpMessageParser(fs.createReadStream('multipart_example.t
 console.log(parsedMessage);
 //
 {
-  method: null,
-  url: null,
+  httpVersion: 1.1,
   statusCode: 200,
   statusMessage: 'OK',
-  httpVersion: 1.1,
+  method: null,
+  url: null,
   headers: {
     'MIME-Version': '1.0'
     'Content-Type': 'multipart/mixed; boundary=frontier'
