@@ -2,7 +2,8 @@
   'use strict';
 
   /**
-   * Code is ugly is fuck cause I quickly rushed this to get it working for my project.
+   * NOTICE!!!
+   * Code is ugly as fuck cause I quickly rushed this to get it working for my project.
    */
 
   function isTruthy(v) {
