@@ -10,9 +10,9 @@ npm install http-message-parser
 
 # Docs
 
-The function takes in a string or [Buffer](https://nodejs.org/api/buffer.html).
+The function takes in a string or [Buffer](https://nodejs.org/api/buffer.html) (recommended).
 
-The result message body and multipart bodies will always return back as a [Buffer](https://nodejs.org/api/buffer.html) in order to retain it's original encoding, for example when parsing binary audio data you don't want the data to be stringified.
+The result message body and multipart bodies will always return back as a [Buffer](https://nodejs.org/api/buffer.html) in order to retain it's original encoding, for example when it parses a response containing binary audio data it won't stringify the body. The library avoids stringifying the content by slicing the input buffer into it's respective sections.
 
 # Usage
 
