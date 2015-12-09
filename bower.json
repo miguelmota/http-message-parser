@@ -1,0 +1,26 @@
+{
+  "name": "httpMessageParser",
+  "main": "httpMessageParser.js",
+  "version": "0.0.3",
+  "homepage": "https://github.com/miguelmota/httpMessageParser",
+  "authors": [
+    "Miguel Mota <hello@miguelmota.com>"
+  ],
+  "description": "HTTP message parser in JavaScript.",
+  "keywords": [
+    "http",
+    "message",
+    "parser",
+    "request",
+    "protocol",
+    "format"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,42 @@
+* {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+}
+
+body {
+  font-family: "Courier New",Courier,monospace;
+  color: #000;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: normal;
+  padding: 5px;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+  font-size: 12px;
+  padding: 10px;
+}
+
+output {
+  display: block;
+  width: 100%;
+  background: #f8f8f8;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 12px;
+}
+
+button {
+  font-family: "Courier New",Courier,monospace;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 5px 10px;
+  cursor: pointer;
+}

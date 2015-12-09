@@ -6,11 +6,30 @@ const httpMessageParser = require('../http-message-parser');
 test('httpMessageParser', function (t) {
   'use strict';
 
-  t.plan(48);
+  t.plan(52);
+
+  // Test 0
+  (function() {
+    var emptyResult = {
+      httpVersion: null,
+      statusCode: null,
+      statusMessage: null,
+      method: null,
+      url: null,
+      headers: null,
+      body: null,
+      boundary: null,
+      multipart: null
+    };
+
+    t.deepEqual(httpMessageParser(), emptyResult);
+    t.deepEqual(httpMessageParser({foo: 'bar'}), emptyResult);
+    t.deepEqual(httpMessageParser(['asdf']), emptyResult);
+    t.deepEqual(httpMessageParser(true), emptyResult);
+  })();
 
   // Test 1
   (function() {
-
     const data = fs.readFileSync(`${__dirname}/data/test_1/message.txt`);
     const parsedMessage = httpMessageParser(data);
 

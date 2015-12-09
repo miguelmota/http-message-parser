@@ -1,30 +1,220 @@
 (function(root) {
   'use strict';
 
-  /**
-   * NOTICE!!!
-   * Code is ugly as fuck cause I quickly rushed this to get it working for my project.
-   */
+  function httpMessageParser(message) {
+    const result = {
+      httpVersion: null,
+      statusCode: null,
+      statusMessage: null,
+      method: null,
+      url: null,
+      headers: null,
+      body: null,
+      boundary: null,
+      multipart: null
+    };
 
-  function isTruthy(v) {
+    var messageString = '';
+    var headerNewlineIndex = 0;
+    var fullBoundary = null;
+
+    if (httpMessageParser._isBuffer(message)) {
+      messageString = message.toString();
+    } else if (typeof message === 'string') {
+      messageString = message;
+      message = httpMessageParser._createBuffer(messageString);
+    } else {
+      return result;
+    }
+
+    /*
+     * Trim leading whitespace
+     */
+    (function() {
+      const firstNonWhitespaceRegex = /[\w-]+/gim;
+      const firstNonWhitespaceIndex = messageString.search(firstNonWhitespaceRegex);
+      if (firstNonWhitespaceIndex > 0) {
+        message = message.slice(firstNonWhitespaceIndex, message.length);
+        messageString = message.toString();
+      }
+    })();
+
+    /* Parse request line
+     */
+    (function() {
+      const possibleRequestLine = messageString.split(/\n|\r\n/)[0];
+      const requestLineMatch = possibleRequestLine.match(httpMessageParser._requestLineRegex);
+
+      if (Array.isArray(requestLineMatch) && requestLineMatch.length > 1) {
+        result.httpVersion = parseFloat(requestLineMatch[1]);
+        result.statusCode = parseInt(requestLineMatch[2]);
+        result.statusMessage = requestLineMatch[3];
+      } else {
+        const responseLineMath = possibleRequestLine.match(httpMessageParser._responseLineRegex);
+        if (Array.isArray(responseLineMath) && responseLineMath.length > 1) {
+          result.method = responseLineMath[1];
+          result.url = responseLineMath[2];
+          result.httpVersion = parseFloat(responseLineMath[3]);
+        }
+      }
+    })();
+
+    /* Parse headers
+     */
+    (function() {
+      headerNewlineIndex = messageString.search(httpMessageParser._headerNewlineRegex);
+      if (headerNewlineIndex > -1) {
+        headerNewlineIndex = headerNewlineIndex + 1; // 1 for newline length
+      }
+
+      const headersString = messageString.substr(0, headerNewlineIndex);
+      const headers = httpMessageParser._parseHeaders(headersString);
+
+      if (Object.keys(headers).length > 0) {
+        result.headers = headers;
+
+        // TOOD: extract boundary.
+      }
+    })();
+
+    /* Try to get boundary if no boundary header
+     */
+    (function() {
+      if (!result.boundary) {
+        const boundaryMatch = messageString.match(httpMessageParser._boundaryRegex);
+
+        if (Array.isArray(boundaryMatch) && boundaryMatch.length) {
+          fullBoundary = boundaryMatch[0].replace(/[\r\n]+/gi, '');
+          const boundary = fullBoundary.replace(/^--/,'');
+          result.boundary = boundary;
+        }
+      }
+    })();
+
+    /* Parse body
+     */
+    (function() {
+      var start = headerNewlineIndex;
+      var end = message.length;
+      const firstBoundaryIndex = messageString.indexOf(fullBoundary);
+
+      if (firstBoundaryIndex > -1) {
+        start = headerNewlineIndex;
+        end = firstBoundaryIndex;
+      }
+
+      if (headerNewlineIndex > -1) {
+        const body = message.slice(start, end);
+
+        if (body && body.length) {
+          result.body = httpMessageParser._isFakeBuffer(body) ? body.toString() : body;
+        }
+      }
+    })();
+
+    /* Parse multipart sections
+     */
+    (function() {
+      if (result.boundary) {
+        const multipartStart = messageString.indexOf(fullBoundary) + fullBoundary.length;
+        const multipartEnd = messageString.lastIndexOf(fullBoundary);
+        const multipartBody = messageString.substr(multipartStart, multipartEnd);
+        const parts = multipartBody.split(fullBoundary);
+
+        result.multipart = parts.filter(httpMessageParser._isTruthy).map(function(part, i) {
+          const result = {
+            headers: null,
+            body: null
+          };
+
+          const newlineRegex = /\n\n|\r\n\r\n/gim;
+          var newlineIndex = 0;
+          var newlineMatch = newlineRegex.exec(part);
+          var body = null;
+
+          if (newlineMatch) {
+            newlineIndex = newlineMatch.index;
+            if (newlineMatch.index <= 0) {
+              newlineMatch = newlineRegex.exec(part);
+              if (newlineMatch) {
+                newlineIndex = newlineMatch.index;
+              }
+            }
+          }
+
+          const possibleHeadersString = part.substr(0, newlineIndex);
+
+          if (newlineIndex > -1) {
+            const headers = httpMessageParser._parseHeaders(possibleHeadersString);
+            if (Object.keys(headers).length > 0) {
+              result.headers = headers;
+
+              var boundaryIndexes = [];
+              for (var j = 0; j < message.length; j++) {
+                var boundaryMatch = message.slice(j, j + fullBoundary.length).toString();
+
+                if (boundaryMatch === fullBoundary) {
+                  boundaryIndexes.push(j);
+                }
+              }
+
+              var boundaryNewlineIndexes = [];
+              boundaryIndexes.slice(0, boundaryIndexes.length - 1).forEach(function(m, k) {
+                const partBody = message.slice(boundaryIndexes[k], boundaryIndexes[k + 1]).toString();
+                var headerNewlineIndex = partBody.search(/\n\n|\r\n\r\n/gim) + 2;
+                headerNewlineIndex  = boundaryIndexes[k] + headerNewlineIndex;
+                boundaryNewlineIndexes.push(headerNewlineIndex);
+              });
+
+              body = message.slice(boundaryNewlineIndexes[i], boundaryIndexes[i + 1]);
+            } else {
+              body = part;
+            }
+          } else {
+            body = part;
+          }
+
+          result.body = httpMessageParser._isFakeBuffer(body) ? body.toString() : body;
+
+          return result;
+        });
+      }
+    })();
+
+    return result;
+  }
+
+  httpMessageParser._isTruthy = function _isTruthy(v) {
     return !!v;
-  }
+  };
 
-  function isNumeric(v) {
-    if (typeof v === 'number' && !isNaN(v)) return true;
+  httpMessageParser._isNumeric = function _isNumeric(v) {
+    if (typeof v === 'number' && !isNaN(v)) {
+      return true;
+    }
+
     v = (v||'').toString().trim();
-    if (!v) return false;
-    return !isNaN(v);
-  }
 
-  function isBuffer(string) {
+    if (!v) {
+      return false;
+    }
+
+    return !isNaN(v);
+  };
+
+  httpMessageParser._isBuffer = function(string) {
+    return (httpMessageParser._isNodeBufferSupported() &&
+            typeof global === 'object' &&
+            global.Buffer.isBuffer(string));
+  };
+
+  httpMessageParser._isNodeBufferSupported = function() {
     return (typeof global === 'object' &&
             typeof global.Buffer === 'function' &&
-            typeof global.Buffer.isBuffer === 'function' &&
-            global.Buffer.isBuffer(string));
-  }
+            typeof global.Buffer.isBuffer === 'function');
+  };
 
-  function parseHeaders(body) {
+  httpMessageParser._parseHeaders = function _parseHeaders(body) {
     const headers = {};
 
     if (typeof body !== 'string') {
@@ -38,190 +228,69 @@
         const key = match[1];
         const value = match[2];
 
-        headers[key] = isNumeric(value) ? Number(value) : value;
+        headers[key] = httpMessageParser._isNumeric(value) ? Number(value) : value;
       }
     });
 
     return headers;
-  }
+  };
 
-  function httpMessageParser(message) {
-    var result = {
-      method: null,
-      url: null,
-      statusCode: null,
-      statusMessage: null,
-      httpVersion: null,
-      headers: null,
-      body: null,
-      boundary: null,
-      multipart: null
-    };
+  httpMessageParser._requestLineRegex = /HTTP\/(1\.0|1\.1|2\.0)\s+(\d+)\s+([\w\s-_]+)/i;
+  httpMessageParser._responseLineRegex = /(GET|POST)\s+(.*)\s+HTTP\/(1\.0|1\.1|2\.0)/i;
+  httpMessageParser._headerNewlineRegex = /^[\r\n]+/gim;
+  httpMessageParser._boundaryRegex = /(\n|\r\n)+--[\w-]+(\n|\r\n)+/g;
 
-    var messageString = '';
-
-    if (isBuffer(message)) {
-      messageString = message.toString();
-    } else if (typeof message === 'string') {
-      messageString = message;
-      message = new Buffer(messageString);
-    } else {
-      return result;
+  httpMessageParser._createBuffer = function(data) {
+    if (httpMessageParser._isNodeBufferSupported()) {
+      return new Buffer(data);
     }
 
-    /* Parse request line
-     */
-    (function() {
-      const requestLineRegex = /HTTP\/(1\.0|1\.1|2\.0)\s+(\d+)\s+([\w\s-_]+)/i;
-      const possibleRequestLine = messageString.split(/\n|\r\n/)[0];
-      const requestLineMatch = possibleRequestLine.match(requestLineRegex);
+    return new httpMessageParser._FakeBuffer(data);
+  };
 
-      if (Array.isArray(requestLineMatch) && requestLineMatch.length > 1) {
-        result.httpVersion = Number(requestLineMatch[1]);
-        result.statusCode = Number(requestLineMatch[2]);
-        result.statusMessage = requestLineMatch[3];
-      } else {
-        const requestLineRegex2 = /(GET|POST)\s+(.*)\s+HTTP\/(1\.0|1\.1|2\.0)/i;
-        const requestLineMatch2 = possibleRequestLine.match(requestLineRegex2);
-        if (Array.isArray(requestLineMatch2) && requestLineMatch2.length > 1) {
-          result.method = requestLineMatch2[1];
-          result.url = requestLineMatch2[2];
-          result.httpVersion = Number(requestLineMatch2[3]);
-        }
-      }
-    })();
+  httpMessageParser._isFakeBuffer = function isFakeBuffer(obj) {
+    return obj instanceof httpMessageParser._FakeBuffer;
+  };
 
-    /* Parse headers
-     */
-    const headerNewlineRegex = /^[\r\n]+/gim;
-    var headerNewlineIndex = messageString.search(headerNewlineRegex);
-    if (headerNewlineIndex > -1) {
-      headerNewlineIndex = headerNewlineIndex + 1;
+  httpMessageParser._FakeBuffer = function FakeBuffer(data) {
+    if (!(this instanceof httpMessageParser._FakeBuffer)) {
+      return new httpMessageParser._FakeBuffer(data);
     }
 
-    (function() {
-      var headersString = messageString.substr(0, headerNewlineIndex);
+    this.data = [];
 
-      var headers = parseHeaders(headersString);
-
-      if (Object.keys(headers).length > 0) {
-        result.headers = headers;
-      }
-    })();
-
-    /* Try to get boundary if no boundary header
-     */
-    if (!result.boundary) {
-      var boundary = messageString.match(/(\n|\r\n)+--[\w-]+(\n|\r\n)+/g);
-
-      if (Array.isArray(boundary) && boundary.length) {
-        boundary = boundary[0].replace(/[\r\n]+/gi, '');
-        const trimmedBoundary = boundary.replace(/^--/,'');
-        result.boundary = trimmedBoundary;
-      }
+    if (Array.isArray(data)) {
+      this.data = data;
+    } else if (typeof data === 'string') {
+      this.data = [].slice.call(data);
     }
 
-    /* Parse body
-     */
-    (function() {
-      var start = headerNewlineIndex;
-      var end = message.length;
-      var boundaryIndex = messageString.search(new RegExp(boundary));
+    function LiveObject() {}
+    Object.defineProperty(LiveObject.prototype, 'length', {
+      get: function() {
+        return this.data.length;
+      }.bind(this)
+    });
 
-      if (boundaryIndex > -1) {
-        start = headerNewlineIndex;
-        end = boundaryIndex;
-      }
+    this.length = (new LiveObject()).length;
+  };
 
-      if (headerNewlineIndex > -1) {
-        var body = message.slice(start, end);
-        if (body && body.length) {
-          result.body = body;
-        }
-      }
-    })();
+  httpMessageParser._FakeBuffer.prototype.slice = function slice() {
+    var newArray = [].slice.apply(this.data, arguments);
+    return new httpMessageParser._FakeBuffer(newArray);
+  };
 
-    /* Parse multipart sections
-     */
-    if (boundary) {
-      const multipartStart = messageString.indexOf(boundary) + boundary.length;
-      const multipartEnd = messageString.lastIndexOf(boundary);
-      const multipartBody = messageString.substr(multipartStart, multipartEnd);
+  httpMessageParser._FakeBuffer.prototype.search = function search() {
+    return [].search.apply(this.data, arguments);
+  };
 
-      const parts = multipartBody.split(boundary);
+  httpMessageParser._FakeBuffer.prototype.indexOf = function indexOf() {
+    return [].indexOf.apply(this.data, arguments);
+  };
 
-      result.multipart = parts.filter(isTruthy).map(function(part, j) {
-        const newlineRegex = /\n\n|\r\n\r\n/gim;
-
-        //const newlineIndex = part.replace(/^[\r\n]/gi, '').search(newlineRegex);
-        //var newlineIndex = part.search(newlineRegex);
-
-        var newlineIndex = 0;
-        var match = newlineRegex.exec(part);
-
-        if (match) {
-          newlineIndex = match.index;
-          if (match.index <= 0) {
-            match = newlineRegex.exec(part);
-            if (match) {
-              newlineIndex = match.index;
-            }
-          }
-        }
-
-
-        var possibleHeadersString = part.substr(0, newlineIndex);
-
-
-        var headers = null;
-        var body = null;
-
-        if (newlineIndex > -1) {
-          var possibleHeaders = parseHeaders(possibleHeadersString);
-          if (Object.keys(possibleHeaders).length > 0) {
-            headers = possibleHeaders;
-
-            var match = '';
-            var matches = [];
-            var z =0;
-            for (var n =0; n < message.length; n++) {
-              match = message.slice(n, n+boundary.length).toString();
-
-              if (match === boundary) {
-                z = n+boundary.length+1;
-                matches.push(n);
-              }
-            }
-
-            var newlines = [];
-            matches.slice(0,matches.length-1).forEach(function(m, o) {
-              var bod = message.slice(matches[o], matches[o+1]).toString();
-              var h = bod.search(/\n\n|\r\n\r\n/gim) + 2;
-              h = matches[o] + h;
-              newlines.push(h);
-            });
-
-            var i = newlines[j];
-            z = matches[j+1];
-
-            body = message.slice(i, z);
-
-          } else {
-            body = part;
-          }
-        } else {
-          body = part;
-        }
-
-        return {
-          headers: headers,
-          body: body
-        };
-      });
-    }
-
-    return result;
-  }
+  httpMessageParser._FakeBuffer.prototype.toString = function toString() {
+    return this.data.join('');
+  };
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
