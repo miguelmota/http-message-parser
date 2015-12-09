@@ -1,10 +1,10 @@
 # http-message-parser
 
-> HTTP message parser in Node.js
+> HTTP message parser in JavaScript.
 
 # Demo
 
-[http://lab.moogs.io/http-message-parser/demo](http://lab.moogs.io/http-message-parser/demo)
+[http://lab.moogs.io/http-message-parser](http://lab.moogs.io/http-message-parser)
 
 # Install
 
