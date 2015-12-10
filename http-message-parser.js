@@ -65,6 +65,13 @@
       headerNewlineIndex = messageString.search(httpMessageParser._headerNewlineRegex);
       if (headerNewlineIndex > -1) {
         headerNewlineIndex = headerNewlineIndex + 1; // 1 for newline length
+      } else {
+        /* There's no line breaks so check if request line exists
+         * because the message might be all headers and no body
+         */
+        if (result.httpVersion) {
+          headerNewlineIndex = messageString.length;
+        }
       }
 
       const headersString = messageString.substr(0, headerNewlineIndex);
@@ -236,7 +243,7 @@
   };
 
   httpMessageParser._requestLineRegex = /HTTP\/(1\.0|1\.1|2\.0)\s+(\d+)\s+([\w\s-_]+)/i;
-  httpMessageParser._responseLineRegex = /(GET|POST)\s+(.*)\s+HTTP\/(1\.0|1\.1|2\.0)/i;
+  httpMessageParser._responseLineRegex = /(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD|TRACE|CONNECT)\s+(.*)\s+HTTP\/(1\.0|1\.1|2\.0)/i;
   httpMessageParser._headerNewlineRegex = /^[\r\n]+/gim;
   httpMessageParser._boundaryRegex = /(\n|\r\n)+--[\w-]+(\n|\r\n)+/g;
 

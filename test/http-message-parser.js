@@ -6,7 +6,7 @@ const httpMessageParser = require('../http-message-parser');
 test('httpMessageParser', function (t) {
   'use strict';
 
-  t.plan(52);
+  t.plan(68);
 
   // Test 0
   (function() {
@@ -183,5 +183,61 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
     t.equal(parsedMessage.multipart[2].body.toString('utf8'), `<!DOCTYPE html><title>Content of a.html.</title>
 
 `);
+  })();
+
+  // Test 5
+  (function() {
+    const data = fs.readFileSync(`${__dirname}/data/test_5/message.txt`);
+    const parsedMessage = httpMessageParser(data);
+
+    t.equal(parsedMessage.method, 'GET');
+    t.equal(parsedMessage.url, '/hello.htm');
+    t.equal(parsedMessage.statusCode, null);
+    t.equal(parsedMessage.statusMessage, null);
+    t.equal(parsedMessage.httpVersion, 1.1);
+    t.equal(parsedMessage.boundary, null);
+    t.deepEqual(parsedMessage.headers, {
+      'User-Agent': 'Mozilla/4.0 (compatible; MSIE5.01; Windows NT)',
+      'Host': 'www.example.com',
+      'Accept-Language': 'en-us',
+      'Accept-Encoding': 'gzip, deflate',
+      'Connection': 'Keep-Alive'
+    });
+    t.equal(parsedMessage.body, null);
+  })();
+
+  // Test 6
+  (function() {
+    const data = fs.readFileSync(`${__dirname}/data/test_6/message.txt`);
+    const parsedMessage = httpMessageParser(data);
+
+    t.equal(parsedMessage.method, null);
+    t.equal(parsedMessage.url, null);
+    t.equal(parsedMessage.statusCode, 400);
+    t.equal(parsedMessage.statusMessage, 'Bad Request');
+    t.equal(parsedMessage.httpVersion, 1.1);
+    t.equal(parsedMessage.boundary, null);
+    t.deepEqual(parsedMessage.headers, {
+      'Date': 'Sun, 18 Oct 2012 10:36:20 GMT',
+      'Server': 'Apache/2.2.14 (Win32)',
+      'Content-Length': 230,
+      'Content-Type': 'text/html; charset=iso-8859-1',
+      'Connection': 'Closed'
+    });
+    t.equal(parsedMessage.body.toString('utf8'), `<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+
+<head>
+   <title>400 Bad Request</title>
+</head>
+
+<body>
+   <h1>Bad Request</h1>
+   <p>Your browser sent a request that this server could not understand.<p>
+   <p>The request line contained invalid characters following the protocol string.<p>
+</body>
+
+</html>
+`)
   })();
 });
