@@ -4,7 +4,7 @@
 
 var path = require('path');
 var fs = require('fs');
-var httpMessageParser = require('../http-message-parser');
+var httpMessageParser = require(path.join('../http-message-parser'));
 var concat = require('concat-stream');
 var streamBuffers = require('stream-buffers');
 var getProp = require('get-prop');
