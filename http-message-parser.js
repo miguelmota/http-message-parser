@@ -28,6 +28,11 @@
     }
 
     /*
+     * Strip extra return characters
+     */
+    messageString = messageString.replace(/\r\n/gim, '\n');
+
+    /*
      * Trim leading whitespace
      */
     (function() {

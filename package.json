@@ -1,8 +1,11 @@
 {
   "name": "http-message-parser",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "HTTP message parser in JavaScript.",
   "main": "http-message-parser.js",
+  "bin": {
+    "http-message-parser": "bin/http-message-parser.js"
+  },
   "directories": {
     "test": "test"
   },
@@ -44,6 +47,9 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-
+    "concat-stream": "^1.5.1",
+    "get-prop": "0.0.10",
+    "minimist": "^1.2.0",
+    "stream-buffers": "^3.0.0"
   }
 }

@@ -80,6 +80,32 @@ console.log(parsedMessage);
 }
 ```
 
+# Command Line
+
+Parsing input file:
+
+```bash
+$ http-message-parser multipart_example.txt
+```
+
+Piping input file:
+
+```bash
+$ cat multipart_example.txt | http-message-parser
+```
+
+Piping input file and only outputing specified part:
+
+```bash
+$ cat multipart_example.txt | http-message-parser --only=multipart[0].body
+```
+
+Piping cURL response and outputing only specified header:
+
+```bash
+$ curl -sD - http://www.example.com/ | node bin/http-message-parser.js --only=headers[Last-Modified]
+```
+
 # Test
 
 ```bash

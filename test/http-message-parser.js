@@ -6,7 +6,7 @@ const httpMessageParser = require('../http-message-parser');
 test('httpMessageParser', function (t) {
   'use strict';
 
-  t.plan(68);
+  t.plan(76);
 
   // Test 0
   (function() {
@@ -98,7 +98,7 @@ test('httpMessageParser', function (t) {
       'Accept-Ranges': 'bytes',
       'Connection': 'close'
     });
-    t.equal(parsedMessage.body.toString('utf8'), `<html>
+    t.equal(parsedMessage.body && parsedMessage.body.toString('utf8'), `<html>
 <head>
   <title>An Example Page</title>
 </head>
@@ -124,7 +124,7 @@ test('httpMessageParser', function (t) {
       'MIME-Version': 1.0,
       'Content-Type': 'multipart/mixed; boundary=frontier'
     });
-    t.equal(parsedMessage.body.toString('utf8'), `This is a message with multiple parts in MIME format.
+    t.equal(parsedMessage.body && parsedMessage.body.toString('utf8'), `This is a message with multiple parts in MIME format.
 `);
     t.deepEqual(parsedMessage.multipart[0].headers, {
       'Content-Type': 'text/plain'
@@ -224,7 +224,7 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
       'Content-Type': 'text/html; charset=iso-8859-1',
       'Connection': 'Closed'
     });
-    t.equal(parsedMessage.body.toString('utf8'), `<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+    t.equal(parsedMessage.body && parsedMessage.body.toString('utf8'), `<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html>
 
 <head>
@@ -239,5 +239,32 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
 
 </html>
 `)
+  })();
+
+  // Test 7
+  (function() {
+    const data = fs.readFileSync(`${__dirname}/data/test_7/message.txt`);
+    const parsedMessage = httpMessageParser(data);
+
+    t.equal(parsedMessage.method, null);
+    t.equal(parsedMessage.url, null);
+    t.equal(parsedMessage.statusCode, 200);
+    t.equal(parsedMessage.statusMessage, 'OK');
+    t.equal(parsedMessage.httpVersion, 1.1);
+    t.equal(parsedMessage.boundary, null);
+    t.deepEqual(parsedMessage.headers, {
+        'Cache-Control': 'max-age=604800',
+        'Content-Type': 'text/html',
+        'Date': 'Thu, 25 Feb 2016 08:38:00 GMT',
+        'Etag': '"359670651+gzip+ident"',
+        'Expires': 'Thu, 03 Mar 2016 08:38:00 GMT',
+        'Last-Modified': 'Fri, 09 Aug 2013 23:54:35 GMT',
+        'Server': 'ECS (mdw/1275)',
+        'Vary': 'Accept-Encoding',
+        'X-Cache': 'HIT',
+        'x-ec-custom-error': 1,
+        'Content-Length': 1270
+    });
+    t.equal(parsedMessage.body.toString().length > 1270, true);
   })();
 });
