@@ -3,9 +3,6 @@
   "version": "0.0.10",
   "description": "HTTP message parser in JavaScript.",
   "main": "http-message-parser.js",
-  "bin": {
-    "http-message-parser": "./bin/http-message-parser.js"
-  },
   "directories": {
     "test": "test"
   },
