@@ -1,8 +1,8 @@
 {
-  "name": "httpMessageParser",
-  "main": "httpMessageParser.js",
+  "name": "http-message-parser",
+  "main": "http-message-parser.js",
   "version": "0.0.16",
-  "homepage": "https://github.com/miguelmota/httpMessageParser",
+  "homepage": "https://github.com/miguelmota/http-message-parser",
   "authors": [
     "Miguel Mota <hello@miguelmota.com>"
   ],
