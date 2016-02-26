@@ -1,6 +1,6 @@
 {
   "name": "http-message-parser",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "HTTP message parser in JavaScript.",
   "main": "http-message-parser.js",
   "directories": {
@@ -22,8 +22,10 @@
     "message",
     "parser",
     "request",
+    "response",
     "protocol",
-    "format"
+    "format",
+    "cli"
   ],
   "author": {
     "name": "Miguel Mota",

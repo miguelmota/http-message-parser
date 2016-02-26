@@ -3,5 +3,5 @@
 'use strict';
 
 var path = require('path');
-require(path.join('../lib/ci'));
+require(path.join('../lib/cli'));
 

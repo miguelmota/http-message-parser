@@ -94,16 +94,16 @@ Piping input file:
 $ cat multipart_example.txt | http-message-parser
 ```
 
-Piping input file and only outputing specified mulipart body:
+Piping input file and only picking specified mulipart body:
 
 ```bash
-$ cat multipart_example.txt | http-message-parser --only=multipart[0].body
+$ cat multipart_example.txt | http-message-parser --pick=multipart[0].body
 ```
 
-Piping cURL response and outputing only specified header:
+Piping cURL response and picking specified header:
 
 ```bash
-$ curl -sD - http://www.example.com/ | http-message-parser.js --only=headers[Last-Modified]
+$ curl -sD - http://www.example.com/ | http-message-parser.js --pick=headers[Last-Modified]
 ```
 
 # Test
