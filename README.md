@@ -46,38 +46,46 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
 ```javascript
 const httpMessageParser = require('http-message-parser');
 
-const parsedMessage = httpMessageParser(fs.createReadStream('multipart_example.txt'));
+fs.readFile('multipart_example.txt', 'binary', (error, messageBuffer) => {
+  if (error) {
+    return console.error(error);
+  }
 
-console.log(parsedMessage);
-//
-{
-  httpVersion: 1.1,
-  statusCode: 200,
-  statusMessage: 'OK',
-  method: null,
-  url: null,
-  headers: {
-    'MIME-Version': '1.0'
-    'Content-Type': 'multipart/mixed; boundary=frontier'
-  },
-  body: <Buffer>, // "This is a message with multiple parts in MIME format."
-  boundary: 'frontier',
-  multipart: [
-    {
-      headers: {
-        'Content-Type': 'text/plain'
-      },
-      body: <Buffer> // "This is the body of the message."
+  const parsedMessage = httpMessageParser(messageBuffer);
+
+  console.log(parsedMessage);
+  //
+  {
+    httpVersion: 1.1,
+    statusCode: 200,
+    statusMessage: 'OK',
+    method: null,
+    url: null,
+    headers: {
+      'MIME-Version': '1.0'
+      'Content-Type': 'multipart/mixed; boundary=frontier'
     },
-    {
-      headers: {
-        'Content-Type': 'application/octet-stream'
-        'Content-Transfer-Encoding': 'base64'
+    body: <Buffer>, // "This is a message with multiple parts in MIME format."
+    boundary: 'frontier',
+    multipart: [
+      {
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        body: <Buffer> // "This is the body of the message."
       },
-      body: <Buffer> // "PGh0bWw+CiAgPGhlYWQ+CiAgPC9oZWFkPgogIDxib2R5Pgog..."
-    }
-  ]
-}
+      {
+        headers: {
+          'Content-Type': 'application/octet-stream'
+          'Content-Transfer-Encoding': 'base64'
+        },
+        body: <Buffer> // "PGh0bWw+CiAgPGhlYWQ+CiAgPC9oZWFkPgogIDxib2R5Pgog..."
+      }
+    ]
+  }
+
+  }
+});
 ```
 
 # Command Line

@@ -1,12 +1,12 @@
+'use strict';
+
 const fs = require('fs');
 const stream = require('stream');
 const test = require('tape');
 const httpMessageParser = require('../http-message-parser');
 
 test('httpMessageParser', function (t) {
-  'use strict';
-
-  t.plan(76);
+  t.plan(84);
 
   // Test 0
   (function() {
@@ -266,5 +266,37 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
         'Content-Length': 1270
     });
     t.equal(parsedMessage.body.toString().length > 1270, true);
+  })();
+
+  // Test 8
+  (function() {
+    fs.readFile(`${__dirname}/data/test_7/message.txt`, 'binary', function (error, data) {
+      if (error) {
+        return console.error(error);
+      }
+
+      const parsedMessage = httpMessageParser(data);
+
+      t.equal(parsedMessage.method, null);
+      t.equal(parsedMessage.url, null);
+      t.equal(parsedMessage.statusCode, 200);
+      t.equal(parsedMessage.statusMessage, 'OK');
+      t.equal(parsedMessage.httpVersion, 1.1);
+      t.equal(parsedMessage.boundary, null);
+      t.deepEqual(parsedMessage.headers, {
+          'Cache-Control': 'max-age=604800',
+          'Content-Type': 'text/html',
+          'Date': 'Thu, 25 Feb 2016 08:38:00 GMT',
+          'Etag': '"359670651+gzip+ident"',
+          'Expires': 'Thu, 03 Mar 2016 08:38:00 GMT',
+          'Last-Modified': 'Fri, 09 Aug 2013 23:54:35 GMT',
+          'Server': 'ECS (mdw/1275)',
+          'Vary': 'Accept-Encoding',
+          'X-Cache': 'HIT',
+          'x-ec-custom-error': 1,
+          'Content-Length': 1270
+      });
+      t.equal(parsedMessage.body.toString().length > 1270, true);
+    });
   })();
 });

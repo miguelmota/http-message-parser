@@ -1,6 +1,6 @@
 {
   "name": "http-message-parser",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "HTTP message parser in JavaScript.",
   "main": "http-message-parser.js",
   "directories": {
