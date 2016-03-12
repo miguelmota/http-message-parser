@@ -45,6 +45,7 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
 
 ```javascript
 const httpMessageParser = require('http-message-parser');
+const fs = require('fs');
 
 fs.readFile('multipart_example.txt', 'binary', (error, messageBuffer) => {
   if (error) {
