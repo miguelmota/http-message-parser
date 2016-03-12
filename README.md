@@ -83,8 +83,6 @@ fs.readFile('multipart_example.txt', 'binary', (error, messageBuffer) => {
       }
     ]
   }
-
-  }
 });
 ```
 
