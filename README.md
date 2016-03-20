@@ -110,7 +110,7 @@ $ cat multipart_example.txt | http-message-parser --pick=multipart[0].body
 Piping cURL response and picking specified header:
 
 ```bash
-$ curl -sD - http://www.example.com/ | http-message-parser.js --pick=headers[Last-Modified]
+$ curl -sD - http://www.example.com/ | http-message-parser --pick=headers[Last-Modified]
 ```
 
 # Test
