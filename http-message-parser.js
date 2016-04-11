@@ -214,10 +214,12 @@
     return !isNaN(v);
   };
 
-  httpMessageParser._isBuffer = function(string) {
-    return (httpMessageParser._isNodeBufferSupported() &&
+  httpMessageParser._isBuffer = function(item) {
+    return ((httpMessageParser._isNodeBufferSupported() &&
             typeof global === 'object' &&
-            global.Buffer.isBuffer(string));
+            global.Buffer.isBuffer(item)) ||
+            (item instanceof Object &&
+             item._isBuffer));
   };
 
   httpMessageParser._isNodeBufferSupported = function() {
