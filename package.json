@@ -1,6 +1,6 @@
 {
   "name": "http-message-parser",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "HTTP message parser in JavaScript.",
   "main": "http-message-parser.js",
   "directories": {
@@ -39,6 +39,7 @@
   },
   "homepage": "https://github.com/miguelmota/http-message-parser",
   "devDependencies": {
+    "buffer": "^4.5.1",
     "tape": "^3.0.3"
   },
   "engines": {

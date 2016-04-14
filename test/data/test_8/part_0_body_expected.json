@@ -1,0 +1,50 @@
+{
+  "messageHeader": {},
+  "messageBody": {
+    "directives": [
+      {
+        "namespace": "SpeechSynthesizer",
+        "name": "speak",
+        "payload": {
+          "contentIdentifier": "amzn1.as-ct.v1.Domain:Application:DailyBriefing:TTS#ACRI#DailyBriefingPrompt.Introduction:0ea4fffd-bf3b-4d67-8d49-4a3af2d0bd51",
+          "audioContent": "cid:DailyBriefingPrompt.Introduction:0ea4fffd-bf3b-4d67-8d49-4a3af2d0bd51_210149980"
+        }
+      },
+      {
+        "namespace": "AudioPlayer",
+        "name": "play",
+        "payload": {
+          "audioItem": {
+            "streams": [
+              {
+                "streamUrl": "cid:DailyBriefingPrompt.SubCategory:02e5604b-e814-4edb-add9-42bff30f5d3a:8ffe382e1b0d889922f61085f4d57927",
+                "offsetInMilliseconds": 0,
+                "expiryTime": null,
+                "progressReport": {
+                  "progressReportDelayInMilliseconds": 0,
+                  "progressReportIntervalInMilliseconds": 0
+                },
+                "progressReportRequired": false,
+                "streamId": "amzn1.as-ct.v1.Domain:Application:DailyBriefing:TTS#ACRI#ssml#ACRI#DailyBriefingPrompt.SubCategory:02e5604b-e814-4edb-add9-42bff30f5d3a:8ffe382e1b0d889922f61085f4d57927"
+              },
+              {
+                "streamUrl": "http://opml.radiotime.com/Tune.ashx?id=t37047160&sid=p212&formats=aac,mp3&partnerId=!EALLOjB&serial=AFMU5EWHZRG3IOJAW7XJEM5TG23Q",
+                "offsetInMilliseconds": 0,
+                "expiryTime": "1970-01-01T00:01:00+0000",
+                "progressReport": {
+                  "progressReportDelayInMilliseconds": 0,
+                  "progressReportIntervalInMilliseconds": 0
+                },
+                "progressReportRequired": false,
+                "streamId": "amzn1.as-ct.v1.Domain:Application:DailyBriefing:TTS#ACRI#url#ACRI#DailyBriefingPrompt.Item:c92af7a7-b53e-49da-b187-23757c7baf0c:2ad42b03e7329c484eb74535c3c96b29"
+              }
+            ],
+            "audioItemId": "amzn1.as-ct.v1.Domain:Application:DailyBriefing:TTS#ACRI#url#ACRI#DailyBriefingPrompt.Item:c92af7a7-b53e-49da-b187-23757c7baf0c:2ad42b03e7329c484eb74535c3c96b29"
+          },
+          "navigationToken": "amzn1.as-ct.v1.Domain:Application:DailyBriefing:TTS#ACRI#url#ACRI#DailyBriefingPrompt.Item:c92af7a7-b53e-49da-b187-23757c7baf0c:2ad42b03e7329c484eb74535c3c96b29",
+          "playBehavior": "REPLACE_PREVIOUS"
+        }
+      }
+    ]
+  }
+}

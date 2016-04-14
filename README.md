@@ -18,6 +18,8 @@ The function takes in a string or [Buffer](https://nodejs.org/api/buffer.html) (
 
 The result message body and multipart bodies will always return back as a [Buffer](https://nodejs.org/api/buffer.html) in Node.js in order to retain it's original encoding, for example when it parses a response containing binary audio data it won't stringify the binary data. The library avoids stringifying the body by performing offset slices on the input buffer.
 
+Use the [buffer](https://github.com/feross/buffer) module if dealing with binary data in the browser.
+
 # Usage
 
 Here's an example.

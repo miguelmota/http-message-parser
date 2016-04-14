@@ -6,7 +6,7 @@ const test = require('tape');
 const httpMessageParser = require('../http-message-parser');
 
 test('httpMessageParser', function (t) {
-  t.plan(84);
+  t.plan(98);
 
   // Test 0
   (function() {
@@ -298,5 +298,55 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
       });
       t.equal(parsedMessage.body.toString().length > 1270, true);
     });
+  })();
+
+  // Test 9 (buffer module)
+  (function() {
+    const Buffer = require('buffer').Buffer;
+    const data = fs.readFileSync(`${__dirname}/data/test_8/message.txt`);
+    const parsedMessage = httpMessageParser(new Buffer(data));
+
+    t.equal(parsedMessage.method, null);
+    t.equal(parsedMessage.url, null);
+    t.equal(parsedMessage.statusCode, null);
+    t.equal(parsedMessage.statusMessage, null);
+    t.equal(parsedMessage.httpVersion, null);
+    t.equal(parsedMessage.boundary, 'fe08dcc5-e670-426c-9f13-679a8f3f623d');
+    t.equal(parsedMessage.body, null);
+
+    t.deepEqual(parsedMessage.multipart[0].headers, {
+      'Content-Type': 'application/json'
+    });
+
+    t.equal(Buffer.isBuffer(parsedMessage.multipart[0].body), true);
+
+    t.deepEqual(JSON.parse(parsedMessage.multipart[0].body.toString('utf8')), require('./data/test_8/part_0_body_expected.json'));
+
+    t.deepEqual(parsedMessage.multipart[1].headers, {
+      'Content-ID': '<DailyBriefingPrompt.Introduction:0ea4fffd-bf3b-4d67-8d49-4a3af2d0bd51_210149980>',
+      'Content-Type': 'audio/mpeg'
+    });
+
+    t.equal(Buffer.isBuffer(parsedMessage.multipart[1].body), true);
+
+    t.deepEqual(parsedMessage.multipart[2].headers, {
+      'Content-ID': '<DailyBriefingPrompt.SubCategory:02e5604b-e814-4edb-add9-42bff30f5d3a:8ffe382e1b0d889922f61085f4d57927>',
+      'Content-Type': 'audio/mpeg'
+    });
+
+    t.equal(Buffer.isBuffer(parsedMessage.multipart[2].body), true);
+
+    /* Test the body output file manually with:
+     * `cat file.txt | mpg123 -`
+     *
+     * You should hear "Here's your flash briefing".
+     */
+    const part0Output = fs.createWriteStream(`${__dirname}/data/test_8/part_1_body_actual.txt`);
+    part0Output.write(parsedMessage.multipart[1].body);
+
+     /* You should hear "in NPR news from TuneIn".
+     */
+    const part1Output= fs.createWriteStream(`${__dirname}/data/test_8/part_2_body_actual.txt`);
+    part1Output.write(parsedMessage.multipart[2].body);
   })();
 });
