@@ -6,7 +6,7 @@ const test = require('tape');
 const httpMessageParser = require('../http-message-parser');
 
 test('httpMessageParser', function (t) {
-  t.plan(98);
+  t.plan(100);
 
   // Test 0
   (function() {
@@ -75,6 +75,21 @@ test('httpMessageParser', function (t) {
      */
     const part1Output= fs.createWriteStream(`${__dirname}/data/test_1/part_2_body_actual.txt`);
     part1Output.write(parsedMessage.multipart[2].body);
+
+    /*
+     * Test body byte offsets
+     */
+    const startOffset1 = parsedMessage.multipart[1].meta.body.byteOffset.start;
+    const endOffset1 = parsedMessage.multipart[1].meta.body.byteOffset.end;
+
+    const slicedBody1 = data.slice(startOffset1, endOffset1);
+    t.equal(slicedBody1.toString(), parsedMessage.multipart[1].body.toString());
+
+    const startOffset2 = parsedMessage.multipart[2].meta.body.byteOffset.start;
+    const endOffset2 = parsedMessage.multipart[2].meta.body.byteOffset.end;
+
+    const slicedBody2 = data.slice(startOffset2, endOffset2);
+    t.equal(slicedBody2.toString(), parsedMessage.multipart[2].body.toString());
   })();
 
   // Test 2

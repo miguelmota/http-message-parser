@@ -136,7 +136,15 @@
         result.multipart = parts.filter(httpMessageParser._isTruthy).map(function(part, i) {
           const result = {
             headers: null,
-            body: null
+            body: null,
+            meta: {
+              body: {
+                byteOffset: {
+                  start: null,
+                  end: null
+                }
+              }
+            }
           };
 
           const newlineRegex = /\n\n|\r\n\r\n/gim;
@@ -155,6 +163,9 @@
           }
 
           const possibleHeadersString = part.substr(0, newlineIndex);
+
+          let startOffset = null;
+          let endOffset = null;
 
           if (newlineIndex > -1) {
             const headers = httpMessageParser._parseHeaders(possibleHeadersString);
@@ -178,7 +189,9 @@
                 boundaryNewlineIndexes.push(headerNewlineIndex);
               });
 
-              body = message.slice(boundaryNewlineIndexes[i], boundaryIndexes[i + 1]);
+              startOffset = boundaryNewlineIndexes[i];
+              endOffset = boundaryIndexes[i + 1];
+              body = message.slice(startOffset, endOffset);
             } else {
               body = part;
             }
@@ -187,6 +200,8 @@
           }
 
           result.body = httpMessageParser._isFakeBuffer(body) ? body.toString() : body;
+          result.meta.body.byteOffset.start = startOffset;
+          result.meta.body.byteOffset.end = endOffset;
 
           return result;
         });
