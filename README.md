@@ -4,7 +4,7 @@
 
 # Demo
 
-[http://lab.moogs.io/http-message-parser](http://lab.moogs.io/http-message-parser)
+[https://lab.miguelmota.com/http-message-parser](https://lab.miguelmota.com/http-message-parser)
 
 # Install
 
