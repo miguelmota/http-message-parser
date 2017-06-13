@@ -131,7 +131,8 @@
         const multipartStart = messageString.indexOf(fullBoundary) + fullBoundary.length;
         const multipartEnd = messageString.lastIndexOf(fullBoundary);
         const multipartBody = messageString.substr(multipartStart, multipartEnd);
-        const parts = multipartBody.split(fullBoundary);
+        const splitRegex = new RegExp('^' + fullBoundary + '.*[\n\r]?$', 'gm')
+        const parts = multipartBody.split(splitRegex);
 
         result.multipart = parts.filter(httpMessageParser._isTruthy).map(function(part, i) {
           const result = {

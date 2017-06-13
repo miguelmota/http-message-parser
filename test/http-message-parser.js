@@ -6,7 +6,7 @@ const test = require('tape');
 const httpMessageParser = require('../http-message-parser');
 
 test('httpMessageParser', function (t) {
-  t.plan(100);
+  t.plan(114);
 
   // Test 0
   (function() {
@@ -141,6 +141,7 @@ test('httpMessageParser', function (t) {
     });
     t.equal(parsedMessage.body && parsedMessage.body.toString('utf8'), `This is a message with multiple parts in MIME format.
 `);
+    t.equal(parsedMessage.multipart.length, 2);
     t.deepEqual(parsedMessage.multipart[0].headers, {
       'Content-Type': 'text/plain'
     });
@@ -280,7 +281,7 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
         'x-ec-custom-error': 1,
         'Content-Length': 1270
     });
-    t.equal(parsedMessage.body.toString().length > 1270, true);
+    t.equal(parsedMessage.body.toString().length, 1270);
   })();
 
   // Test 8
@@ -311,7 +312,7 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
           'x-ec-custom-error': 1,
           'Content-Length': 1270
       });
-      t.equal(parsedMessage.body.toString().length > 1270, true);
+      t.equal(parsedMessage.body.toString().length, 1270);
     });
   })();
 
@@ -363,5 +364,39 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
      */
     const part1Output= fs.createWriteStream(`${__dirname}/data/test_8/part_2_body_actual.txt`);
     part1Output.write(parsedMessage.multipart[2].body);
+  })();
+
+  // Test 10 (testing junk text after multipart boundary in same line)
+  (function() {
+    const data = fs.readFileSync(`${__dirname}/data/test_10/message.txt`);
+    const parsedMessage = httpMessageParser(data);
+
+    t.equal(parsedMessage.method, null);
+    t.equal(parsedMessage.url, null);
+    t.equal(parsedMessage.statusCode, 200);
+    t.equal(parsedMessage.statusMessage, 'OK');
+    t.equal(parsedMessage.httpVersion, 1.1);
+    t.equal(parsedMessage.boundary, 'frontier');
+    t.deepEqual(parsedMessage.headers, {
+      'MIME-Version': 1.0,
+      'Content-Type': 'multipart/mixed; boundary=frontier'
+    });
+    t.equal(parsedMessage.body && parsedMessage.body.toString('utf8'), `This is a message with multiple parts in MIME format.
+`);
+
+    t.equal(parsedMessage.multipart.length, 2);
+    t.deepEqual(parsedMessage.multipart[0].headers, {
+      'Content-Type': 'text/plain'
+    });
+    t.equal(parsedMessage.multipart[0].body.toString('utf8'), `This is the body of the message.
+`);
+    t.deepEqual(parsedMessage.multipart[1].headers, {
+      'Content-Type': 'application/octet-stream',
+      'Content-Transfer-Encoding': 'base64'
+    });
+
+    t.equal(parsedMessage.multipart[1].body.toString('utf8'), `PGh0bWw+CiAgPGhlYWQ+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPHA+VGhpcyBpcyB0aGUg
+Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
+`);
   })();
 });

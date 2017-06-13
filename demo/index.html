@@ -8,8 +8,7 @@
 </head>
 <body>
   <h1>HTTP Message Parser</h1>
-  <textarea id="input" rows="20">
-HTTP/1.1 200 OK
+<textarea id="input" rows="20">HTTP/1.1 200 OK
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=frontier
 
@@ -24,8 +23,7 @@ Content-Transfer-Encoding: base64
 
 PGh0bWw+CiAgPGhlYWQ+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPHA+VGhpcyBpcyB0aGUg
 Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
---frontier
-  </textarea>
+--frontier</textarea>
   <button id="parse">Parse</button>
   <output id="output"></output>
   <script src="../http-message-parser.js"></script>
