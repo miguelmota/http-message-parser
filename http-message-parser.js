@@ -174,11 +174,12 @@
               result.headers = headers;
 
               var boundaryIndexes = [];
-              for (var j = 0; j < message.length; j++) {
-                var boundaryMatch = message.slice(j, j + fullBoundary.length).toString();
+              for (var j = 0; j >= 0;) {
+                j = message.indexOf(fullBoundary, j);
 
-                if (boundaryMatch === fullBoundary) {
+                if (j >= 0) {
                   boundaryIndexes.push(j);
+                  j += fullBoundary.length;
                 }
               }
 
