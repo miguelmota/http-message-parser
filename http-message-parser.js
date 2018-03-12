@@ -279,7 +279,9 @@ httpMessageParser._isInBrowser = function() {
 };
 
 if (httpMessageParser._isInBrowser) {
-  window.httpMessageParser = httpMessageParser;
+  if (typeof window === 'object') {
+    window.httpMessageParser = httpMessageParser;
+  }
 }
 
 if (typeof exports !== 'undefined') {
