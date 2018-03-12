@@ -1,6 +1,6 @@
 {
   "name": "http-message-parser",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "HTTP message parser in JavaScript.",
   "main": "http-message-parser.js",
   "directories": {
@@ -9,7 +9,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "./node_modules/tape/bin/tape test/*.js"
+    "test": "./node_modules/tape/bin/tape test/*.js",
+    "build": "browserify http-message-parser.js -o dist/http-message-parser.js"
   },
   "repository": {
     "type": "git",
@@ -39,13 +40,14 @@
   },
   "homepage": "https://github.com/miguelmota/http-message-parser",
   "devDependencies": {
-    "buffer": "^4.5.1",
+    "browserify": "^16.1.1",
     "tape": "^3.0.3"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "dependencies": {
+    "buffer": "^4.9.1",
     "concat-stream": "^1.5.1",
     "get-prop": "0.0.10",
     "minimist": "^1.2.0",
