@@ -12,7 +12,8 @@
     const result = httpMessageParser(input.value)
     result.body = result.body.toString()
     result.multipart = result.multipart.map(function(x) {
-      return x.body.toString()
+      x.body = x.body.toString()
+      return x
     })
     output.innerHTML = '<pre><code>' + escapeHtml(JSON.stringify(result, null, 2)) + '<code></pre>'
   }
