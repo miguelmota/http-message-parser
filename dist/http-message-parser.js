@@ -1,9 +1,13 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 (function (process,global){
-var Buffer = require('buffer/').Buffer
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var Buffer = require('buffer/').Buffer;
 
 function httpMessageParser(message) {
-  const result = {
+  var result = {
     httpVersion: null,
     statusCode: null,
     statusMessage: null,
@@ -36,9 +40,9 @@ function httpMessageParser(message) {
   /*
    * Trim leading whitespace
    */
-  (function() {
-    const firstNonWhitespaceRegex = /[\w-]+/gim;
-    const firstNonWhitespaceIndex = messageString.search(firstNonWhitespaceRegex);
+  (function () {
+    var firstNonWhitespaceRegex = /[\w-]+/gim;
+    var firstNonWhitespaceIndex = messageString.search(firstNonWhitespaceRegex);
     if (firstNonWhitespaceIndex > 0) {
       message = message.slice(firstNonWhitespaceIndex, message.length);
       messageString = message.toString();
@@ -47,16 +51,16 @@ function httpMessageParser(message) {
 
   /* Parse request line
    */
-  (function() {
-    const possibleRequestLine = messageString.split(/\n|\r\n/)[0];
-    const requestLineMatch = possibleRequestLine.match(httpMessageParser._requestLineRegex);
+  (function () {
+    var possibleRequestLine = messageString.split(/\n|\r\n/)[0];
+    var requestLineMatch = possibleRequestLine.match(httpMessageParser._requestLineRegex);
 
     if (Array.isArray(requestLineMatch) && requestLineMatch.length > 1) {
       result.httpVersion = parseFloat(requestLineMatch[1]);
       result.statusCode = parseInt(requestLineMatch[2]);
       result.statusMessage = requestLineMatch[3];
     } else {
-      const responseLineMath = possibleRequestLine.match(httpMessageParser._responseLineRegex);
+      var responseLineMath = possibleRequestLine.match(httpMessageParser._responseLineRegex);
       if (Array.isArray(responseLineMath) && responseLineMath.length > 1) {
         result.method = responseLineMath[1];
         result.url = responseLineMath[2];
@@ -67,7 +71,7 @@ function httpMessageParser(message) {
 
   /* Parse headers
    */
-  (function() {
+  (function () {
     headerNewlineIndex = messageString.search(httpMessageParser._headerNewlineRegex);
     if (headerNewlineIndex > -1) {
       headerNewlineIndex = headerNewlineIndex + 1; // 1 for newline length
@@ -80,8 +84,8 @@ function httpMessageParser(message) {
       }
     }
 
-    const headersString = messageString.substr(0, headerNewlineIndex);
-    const headers = httpMessageParser._parseHeaders(headersString);
+    var headersString = messageString.substr(0, headerNewlineIndex);
+    var headers = httpMessageParser._parseHeaders(headersString);
 
     if (Object.keys(headers).length > 0) {
       result.headers = headers;
@@ -92,13 +96,13 @@ function httpMessageParser(message) {
 
   /* Try to get boundary if no boundary header
    */
-  (function() {
+  (function () {
     if (!result.boundary) {
-      const boundaryMatch = messageString.match(httpMessageParser._boundaryRegex);
+      var boundaryMatch = messageString.match(httpMessageParser._boundaryRegex);
 
       if (Array.isArray(boundaryMatch) && boundaryMatch.length) {
         fullBoundary = boundaryMatch[0].replace(/[\r\n]+/gi, '');
-        const boundary = fullBoundary.replace(/^--/,'');
+        var boundary = fullBoundary.replace(/^--/, '');
         result.boundary = boundary;
       }
     }
@@ -106,10 +110,10 @@ function httpMessageParser(message) {
 
   /* Parse body
    */
-  (function() {
+  (function () {
     var start = headerNewlineIndex;
     var end = message.length;
-    const firstBoundaryIndex = messageString.indexOf(fullBoundary);
+    var firstBoundaryIndex = messageString.indexOf(fullBoundary);
 
     if (firstBoundaryIndex > -1) {
       start = headerNewlineIndex;
@@ -117,7 +121,7 @@ function httpMessageParser(message) {
     }
 
     if (headerNewlineIndex > -1) {
-      const body = message.slice(start, end);
+      var body = message.slice(start, end);
 
       if (body && body.length) {
         result.body = body;
@@ -127,16 +131,16 @@ function httpMessageParser(message) {
 
   /* Parse multipart sections
    */
-  (function() {
+  (function () {
     if (result.boundary) {
-      const multipartStart = messageString.indexOf(fullBoundary) + fullBoundary.length;
-      const multipartEnd = messageString.lastIndexOf(fullBoundary);
-      const multipartBody = messageString.substr(multipartStart, multipartEnd);
-      const splitRegex = new RegExp('^' + fullBoundary + '.*[\n\r]?$', 'gm')
-      const parts = multipartBody.split(splitRegex);
+      var multipartStart = messageString.indexOf(fullBoundary) + fullBoundary.length;
+      var multipartEnd = messageString.lastIndexOf(fullBoundary);
+      var multipartBody = messageString.substr(multipartStart, multipartEnd);
+      var splitRegex = new RegExp('^' + fullBoundary + '.*[\n\r]?$', 'gm');
+      var parts = multipartBody.split(splitRegex);
 
-      result.multipart = parts.filter(httpMessageParser._isTruthy).map(function(part, i) {
-        const result = {
+      result.multipart = parts.filter(httpMessageParser._isTruthy).map(function (part, i) {
+        var result = {
           headers: null,
           body: null,
           meta: {
@@ -149,7 +153,7 @@ function httpMessageParser(message) {
           }
         };
 
-        const newlineRegex = /\n\n|\r\n\r\n/gim;
+        var newlineRegex = /\n\n|\r\n\r\n/gim;
         var newlineIndex = 0;
         var newlineMatch = newlineRegex.exec(part);
         var body = null;
@@ -164,13 +168,13 @@ function httpMessageParser(message) {
           }
         }
 
-        const possibleHeadersString = part.substr(0, newlineIndex);
+        var possibleHeadersString = part.substr(0, newlineIndex);
 
-        let startOffset = null;
-        let endOffset = null;
+        var startOffset = null;
+        var endOffset = null;
 
         if (newlineIndex > -1) {
-          const headers = httpMessageParser._parseHeaders(possibleHeadersString);
+          var headers = httpMessageParser._parseHeaders(possibleHeadersString);
           if (Object.keys(headers).length > 0) {
             result.headers = headers;
 
@@ -185,10 +189,10 @@ function httpMessageParser(message) {
             }
 
             var boundaryNewlineIndexes = [];
-            boundaryIndexes.slice(0, boundaryIndexes.length - 1).forEach(function(m, k) {
-              const partBody = message.slice(boundaryIndexes[k], boundaryIndexes[k + 1]).toString();
+            boundaryIndexes.slice(0, boundaryIndexes.length - 1).forEach(function (m, k) {
+              var partBody = message.slice(boundaryIndexes[k], boundaryIndexes[k + 1]).toString();
               var headerNewlineIndex = partBody.search(/\n\n|\r\n\r\n/gim) + 2;
-              headerNewlineIndex  = boundaryIndexes[k] + headerNewlineIndex;
+              headerNewlineIndex = boundaryIndexes[k] + headerNewlineIndex;
               boundaryNewlineIndexes.push(headerNewlineIndex);
             });
 
@@ -223,7 +227,7 @@ httpMessageParser._isNumeric = function _isNumeric(v) {
     return true;
   }
 
-  v = (v||'').toString().trim();
+  v = (v || '').toString().trim();
 
   if (!v) {
     return false;
@@ -232,33 +236,27 @@ httpMessageParser._isNumeric = function _isNumeric(v) {
   return !isNaN(v);
 };
 
-httpMessageParser._isBuffer = function(item) {
-  return ((httpMessageParser._isNodeBufferSupported() &&
-          typeof global === 'object' &&
-          global.Buffer.isBuffer(item)) ||
-          (item instanceof Object &&
-           item._isBuffer));
+httpMessageParser._isBuffer = function (item) {
+  return httpMessageParser._isNodeBufferSupported() && (typeof global === 'undefined' ? 'undefined' : _typeof(global)) === 'object' && global.Buffer.isBuffer(item) || item instanceof Object && item._isBuffer;
 };
 
-httpMessageParser._isNodeBufferSupported = function() {
-  return (typeof global === 'object' &&
-          typeof global.Buffer === 'function' &&
-          typeof global.Buffer.isBuffer === 'function');
+httpMessageParser._isNodeBufferSupported = function () {
+  return (typeof global === 'undefined' ? 'undefined' : _typeof(global)) === 'object' && typeof global.Buffer === 'function' && typeof global.Buffer.isBuffer === 'function';
 };
 
 httpMessageParser._parseHeaders = function _parseHeaders(body) {
-  const headers = {};
+  var headers = {};
 
   if (typeof body !== 'string') {
     return headers;
   }
 
-  body.split(/[\r\n]/).forEach(function(string) {
-    const match = string.match(/([\w-]+):\s*(.*)/i);
+  body.split(/[\r\n]/).forEach(function (string) {
+    var match = string.match(/([\w-]+):\s*(.*)/i);
 
     if (Array.isArray(match) && match.length === 3) {
-      const key = match[1];
-      const value = match[2];
+      var key = match[1];
+      var value = match[2];
 
       headers[key] = httpMessageParser._isNumeric(value) ? Number(value) : value;
     }
@@ -272,16 +270,16 @@ httpMessageParser._responseLineRegex = /(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD|
 httpMessageParser._headerNewlineRegex = /^[\r\n]+/gim;
 httpMessageParser._boundaryRegex = /(\n|\r\n)+--[\w-]+(\n|\r\n)+/g;
 
-httpMessageParser._createBuffer = function(data) {
+httpMessageParser._createBuffer = function (data) {
   return new Buffer(data);
 };
 
-httpMessageParser._isInBrowser = function() {
-  return !(typeof process === 'object' && process + '' === '[object process]')
+httpMessageParser._isInBrowser = function () {
+  return !((typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && process + '' === '[object process]');
 };
 
 if (httpMessageParser._isInBrowser) {
-  if (typeof window === 'object') {
+  if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object') {
     window.httpMessageParser = httpMessageParser;
   }
 }
@@ -292,11 +290,10 @@ if (typeof exports !== 'undefined') {
   }
   exports.httpMessageParser = httpMessageParser;
 } else if (typeof define === 'function' && define.amd) {
-  define([], function() {
+  define([], function () {
     return httpMessageParser;
   });
 }
-
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"_process":6,"buffer/":3}],2:[function(require,module,exports){

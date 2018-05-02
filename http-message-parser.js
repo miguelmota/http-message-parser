@@ -164,8 +164,8 @@ function httpMessageParser(message) {
 
         const possibleHeadersString = part.substr(0, newlineIndex);
 
-        let startOffset = null;
-        let endOffset = null;
+        var startOffset = null;
+        var endOffset = null;
 
         if (newlineIndex > -1) {
           const headers = httpMessageParser._parseHeaders(possibleHeadersString);
