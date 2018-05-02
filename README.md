@@ -1,6 +1,6 @@
 <h1 align="center">
   <br />
-  <img src="https://user-images.githubusercontent.com/168240/39508728-629e02fa-4d98-11e8-8808-b3b3d5e800f3.png" alt="HTTP Message Parser" width="600" />
+  <img src="https://user-images.githubusercontent.com/168240/39508728-629e02fa-4d98-11e8-8808-b3b3d5e800f3.png" alt="HTTP Message Parser" width="500" />
   <br />
   <br />
   <br />
