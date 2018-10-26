@@ -115,7 +115,7 @@ function httpMessageParser(message) {
     }
 
     if (headerNewlineIndex > -1) {
-      const body = message.slice(start, end);
+      const body = messageString.slice(start, end);
 
       if (body && body.length) {
         result.body = body;
@@ -267,7 +267,8 @@ httpMessageParser._parseHeaders = function _parseHeaders(body) {
 
 httpMessageParser._requestLineRegex = /HTTP\/(1\.0|1\.1|2\.0)\s+(\d+)\s+([\w\s-_]+)/i;
 httpMessageParser._responseLineRegex = /(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD|TRACE|CONNECT)\s+(.*)\s+HTTP\/(1\.0|1\.1|2\.0)/i;
-httpMessageParser._headerNewlineRegex = /^[\r\n]+/gim;
+//httpMessageParser._headerNewlineRegex = /^[\r\n]+/gim;
+httpMessageParser._headerNewlineRegex = /^[\r\n]+/gim
 httpMessageParser._boundaryRegex = /(\n|\r\n)+--[\w-]+(\n|\r\n)+/g;
 
 httpMessageParser._createBuffer = function(data) {

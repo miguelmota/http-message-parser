@@ -6,7 +6,7 @@ const test = require('tape');
 const httpMessageParser = require('../http-message-parser');
 
 test('httpMessageParser', function (t) {
-  t.plan(114);
+  t.plan(122);
 
   // Test 0
   (function() {
@@ -397,6 +397,34 @@ Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
 
     t.equal(parsedMessage.multipart[1].body.toString('utf8'), `PGh0bWw+CiAgPGhlYWQ+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPHA+VGhpcyBpcyB0aGUg
 Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
+`);
+  })();
+
+  // Test 11 (testing '\r' new lines)
+  (function() {
+    const data = `HTTP/1.1 200 OK\r
+Server: nginx/1.6.2\r
+Date: Fri, 21 Sep 2018 09:05:11 GMT\r
+Expires: Thu, 20 Dec 2018 09:05:11 GMT\r
+Access-Control-Allow-Origin: *\r
+\r
+aaaa
+`
+    const parsedMessage = httpMessageParser(data);
+
+    t.equal(parsedMessage.method, null);
+    t.equal(parsedMessage.url, null);
+    t.equal(parsedMessage.statusCode, 200);
+    t.equal(parsedMessage.statusMessage, 'OK');
+    t.equal(parsedMessage.httpVersion, 1.1);
+    t.equal(parsedMessage.boundary, null);
+    t.deepEqual(parsedMessage.headers, {
+      'Server': 'nginx/1.6.2',
+      'Date': 'Fri, 21 Sep 2018 09:05:11 GMT',
+      'Expires': 'Thu, 20 Dec 2018 09:05:11 GMT',
+      'Access-Control-Allow-Origin': '*',
+    });
+    t.equal(parsedMessage.body.toString('utf8'), `aaaa
 `);
   })();
 });
