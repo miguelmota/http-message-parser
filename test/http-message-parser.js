@@ -408,8 +408,7 @@ Date: Fri, 21 Sep 2018 09:05:11 GMT\r
 Expires: Thu, 20 Dec 2018 09:05:11 GMT\r
 Access-Control-Allow-Origin: *\r
 \r
-aaaa
-`
+aaaa`
     const parsedMessage = httpMessageParser(data);
 
     t.equal(parsedMessage.method, null);
@@ -424,7 +423,6 @@ aaaa
       'Expires': 'Thu, 20 Dec 2018 09:05:11 GMT',
       'Access-Control-Allow-Origin': '*',
     });
-    t.equal(parsedMessage.body.toString('utf8'), `aaaa
-`);
+    t.equal(parsedMessage.body.toString('utf8'), `aaaa`);
   })();
 });
