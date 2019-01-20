@@ -30,9 +30,9 @@ The result message body and multipart bodies will always return back as a [Buffe
 
 Use the [buffer](https://github.com/feross/buffer) module if dealing with binary data in the browser.
 
-## Usage
+## Getting started
 
-Here's an example.
+Here's a simple example
 
 `multipart_example.txt`
 
