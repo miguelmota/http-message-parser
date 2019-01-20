@@ -1,24 +1,28 @@
 <h1 align="center">
   <br />
-  <img src="https://user-images.githubusercontent.com/168240/39508728-629e02fa-4d98-11e8-8808-b3b3d5e800f3.png" alt="HTTP Message Parser" width="500" />
+  <img src="https://user-images.githubusercontent.com/168240/39508728-629e02fa-4d98-11e8-8808-b3b3d5e800f3.png" alt="logo" width="500" />
   <br />
   <br />
   <br />
 </h1>
 
+# http-message-parser
+
 > HTTP message parser in JavaScript.
 
-# Demo
+[![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/miguelmota/http-message-parser/master/LICENSE) [![Build Status](https://travis-ci.org/miguelmota/http-message-parser.svg?branch=master)](https://travis-ci.org/miguelmota/http-message-parser) [![dependencies Status](https://david-dm.org/miguelmota/http-message-parser/status.svg)](https://david-dm.org/miguelmota/http-message-parser) [![NPM version](https://badge.fury.io/js/http-message-parser.svg)](http://badge.fury.io/js/http-message-parser)
+
+## Demo
 
 [https://lab.miguelmota.com/http-message-parser](https://lab.miguelmota.com/http-message-parser)
 
-# Install
+## Install
 
 ```bash
 npm install http-message-parser
 ```
 
-# Docs
+## Documentation
 
 The function takes in a string or [Buffer](https://nodejs.org/api/buffer.html) (recommended).
 
@@ -26,7 +30,7 @@ The result message body and multipart bodies will always return back as a [Buffe
 
 Use the [buffer](https://github.com/feross/buffer) module if dealing with binary data in the browser.
 
-# Usage
+## Usage
 
 Here's an example.
 
@@ -95,7 +99,7 @@ fs.readFile('multipart_example.txt', 'binary', (error, messageBuffer) => {
 });
 ```
 
-# Command Line
+## Command Line
 
 Parsing input file:
 
@@ -121,12 +125,12 @@ Piping cURL response and picking specified header:
 $ curl -sD - http://www.example.com/ | http-message-parser --pick=headers[Last-Modified]
 ```
 
-# Test
+## Test
 
 ```bash
 npm test
 ```
 
-# License
+## License
 
-MIT
+[MIT](LICENSE)
